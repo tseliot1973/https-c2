@@ -1,4 +1,5 @@
 <h1> Analysis Metadata</h1>
+This directory provides analysis files for Empire, Mythic and Sliver. The PCAPNG files contain the network traffic between the client and the server, collected at the server. The CSV files matching the capture files contain the lists of tasks issued to the beacon as well as the times commands were sent.
 
 <h2> Software Versions</h2>
 <h3> Empire </h3>
