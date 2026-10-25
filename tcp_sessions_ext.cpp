@@ -252,6 +252,7 @@ using DedupSet = std::unordered_set<DedupKey>;
 struct PacketRecord {
     double      timestamp{};
     std::vector<uint8_t> payload;
+    std::vector<uint8_t> tls_record_content_types;
 };
 
 struct TCPSession {
@@ -274,13 +275,41 @@ struct TCPSession {
 // ---------------------------------------------------------------------------
 // TLS header check
 // ---------------------------------------------------------------------------
-static bool is_valid_tls_header(const std::vector<uint8_t>& p) {
-    if (p.size() < 5) return false;
-    const uint8_t ct  = static_cast<uint8_t>(p[0]);
+static bool is_valid_tls_record_header(const uint8_t* payload, size_t payload_len) {
+    if (payload_len < 5) return false;
+    const uint8_t ct  = static_cast<uint8_t>(payload[0]);
     if (ct != 0x14 && ct != 0x15 && ct != 0x16 && ct != 0x17) return false;
-    const uint16_t ver = (static_cast<uint8_t>(p[1]) << 8) |
-                          static_cast<uint8_t>(p[2]);
+    const uint16_t ver = (static_cast<uint8_t>(payload[1]) << 8) |
+                          static_cast<uint8_t>(payload[2]);
     return ver >= 0x0301 && ver <= 0x0304;
+}
+
+static bool is_valid_tls_header(const std::vector<uint8_t>& p) {
+    return is_valid_tls_record_header(p.data(), p.size());
+}
+
+static std::vector<uint8_t> parse_tls_record_content_types(const uint8_t* payload,
+                                                           size_t payload_len) {
+    std::vector<uint8_t> content_types;
+    size_t offset = 0;
+    while ((offset + 5) <= payload_len) {
+        const uint8_t* header = payload + offset;
+        const size_t remaining = payload_len - offset;
+        if (!is_valid_tls_record_header(header, remaining)) {
+            break;
+        }
+
+        const uint16_t record_len =
+            (static_cast<uint16_t>(header[3]) << 8) | static_cast<uint16_t>(header[4]);
+        content_types.push_back(header[0]);
+
+        const size_t record_total_len = 5 + static_cast<size_t>(record_len);
+        if (record_total_len > remaining) {
+            break;
+        }
+        offset += record_total_len;
+    }
+    return content_types;
 }
 
 // ---------------------------------------------------------------------------
@@ -564,7 +593,10 @@ struct ExtractorState {
                 // we don't double-count retransmits.
                 if (max_packets_per_session == 0 ||
                     pkt_vec.size() < max_packets_per_session) {
-                    pkt_vec.push_back({ts, std::vector<uint8_t>{tcp_data_ptr, tcp_data_ptr + payload_len}});
+                    std::vector<uint8_t> payload{tcp_data_ptr, tcp_data_ptr + payload_len};
+                    std::vector<uint8_t> content_types =
+                        parse_tls_record_content_types(payload.data(), payload.size());
+                    pkt_vec.push_back({ts, std::move(payload), std::move(content_types)});
                 }
             }
         }
@@ -977,6 +1009,24 @@ NB_MODULE(tcp_sessions_ext, m) {
             for (const auto& p : s.server_to_client_packets)
                 lst.append(nb::make_tuple(p.timestamp, nb::bytes(reinterpret_cast<const char*>(p.payload.data()), p.payload.size())));
             return lst;
+        })
+        .def_prop_ro("messages", [](const TCPSession& s) {
+            auto packet_messages = [](const std::vector<PacketRecord>& packets) {
+                nb::list packet_types;
+                for (const auto& packet : packets) {
+                    nb::list types;
+                    for (uint8_t content_type : packet.tls_record_content_types) {
+                        types.append(nb::int_(content_type));
+                    }
+                    packet_types.append(std::move(types));
+                }
+                return packet_types;
+            };
+
+            nb::dict messages;
+            messages["client_to_server"] = packet_messages(s.client_to_server_packets);
+            messages["server_to_client"] = packet_messages(s.server_to_client_packets);
+            return messages;
         });
 
     nb::class_<TCPSessionIterator>(m, "TCPSessionIterator")

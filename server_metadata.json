@@ -1,0 +1,51 @@
+[
+  {
+    "filename": "empire_60-20261001.pcapng",
+    "server_ip": "173.230.135.120",
+    "label": 1,
+    "label_description": "malicious",
+    "server_location": "US South"
+  },
+  {
+    "filename": "empire_25-20261004.pcapng",
+    "server_ip": "173.230.135.120",
+    "label": 1,
+    "label_description": "malicious",
+    "server_location": "US South"
+  },
+  {
+    "filename": "sliver_60-20261001.pcapng",
+    "server_ip": "45.79.198.201",
+    "label": 1,
+    "label_description": "malicious",
+    "server_location": "US South"
+  },
+  {
+    "filename": "sliver_25-20261004.pcapng",
+    "server_ip": "45.79.198.201",
+    "label": 1,
+    "label_description": "malicious",
+    "server_location": "US South"
+  },
+  {
+    "filename": "mythic_60-20261001.pcapng",
+    "server_ip": "74.207.233.171",
+    "label": 1,
+    "label_description": "malicious",
+    "server_location": "US South"
+  },
+  {
+    "filename": "mythic_25-20261004.pcapng",
+    "server_ip": "74.207.233.171",
+    "label": 1,
+    "label_description": "malicious",
+    "server_location": "US South"
+  },
+  { 
+    "filename": "sorted_tls13_testing.pcap",
+    "server_ip": "0.0.0.0", 
+    "label": 0,
+    "label_description": "benign",
+    "server_location": "US South"
+  }
+]
