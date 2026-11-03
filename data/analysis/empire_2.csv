@@ -1,0 +1,13 @@
+observed at,agent_id,agent_name,hostname,username,task_id,task_name,description,status,user enters task in server,results received from implant,elapsed_seconds
+1793586549,1TJHEMGE,1TJHEMGE,starbase1,root,1,TASK_SHELL,df -alh,completed,1793586300,1793586308,8
+1793586549,1TJHEMGE,1TJHEMGE,starbase1,root,2,TASK_SHELL,ps -aux ,completed,1793586303,1793586308,5
+1793586549,1TJHEMGE,1TJHEMGE,starbase1,root,3,TASK_SHELL,dpkg -i,completed,1793586308,1793586338,30
+1793586549,1TJHEMGE,1TJHEMGE,starbase1,root,4,TASK_SHELL,cat /proc/version,completed,1793586314,1793586338,24
+1793586549,1TJHEMGE,1TJHEMGE,starbase1,root,5,TASK_SHELL,lscpu,completed,1793586318,1793586338,20
+1793586549,1TJHEMGE,1TJHEMGE,starbase1,root,6,TASK_SHELL,cat /etc/shadow,completed,1793586323,1793586338,15
+1793586549,1TJHEMGE,1TJHEMGE,starbase1,root,7,TASK_SHELL,which gcc,completed,1793586336,1793586338,2
+1793586549,1TJHEMGE,1TJHEMGE,starbase1,root,8,TASK_SHELL,which python,completed,1793586341,1793586369,28
+1793586549,1TJHEMGE,1TJHEMGE,starbase1,root,9,TASK_SHELL,cat /etc/shells,completed,1793586362,1793586369,7
+1793586549,1TJHEMGE,1TJHEMGE,starbase1,root,10,TASK_SHELL,history,completed,1793586364,1793586369,5
+1793586549,1TJHEMGE,1TJHEMGE,starbase1,root,11,TASK_SHELL,cat /car/log/auth.log,completed,1793586381,1793586406,25
+1793586549,1TJHEMGE,1TJHEMGE,starbase1,root,12,TASK_SHELL,cat /var/log/syslog,completed,1793586387,1793586406,19
